@@ -70,7 +70,7 @@ function App(): JSX.Element {
       <Text>a</Text>
       <Text>{Config.ENV}</Text>
       <Text>a</Text>
-      <WebView source={{ uri: 'http://192.168.25.6:3000/' }}></WebView>
+      <WebView source={{ uri: `${Config.WV_URL}` }}></WebView>
     </SafeAreaView>
   );
 }

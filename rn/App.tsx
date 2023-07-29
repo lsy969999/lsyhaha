@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -19,7 +19,6 @@ import {
   Button,
   NativeEventEmitter
 } from 'react-native';
-
 import {
   Colors,
   DebugInstructions,
@@ -30,7 +29,7 @@ import {
 import Config from 'react-native-config';
 import { WebView } from 'react-native-webview';
 import EventEmitter, { EmitterSubscription } from 'react-native/Libraries/vendor/emitter/EventEmitter';
-
+import {getUserAgent} from 'react-native-device-info'
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
@@ -71,21 +70,33 @@ function App(): JSX.Element {
 
   const {SampleModule} = NativeModules
 
-  const onPress = async () => {
+  const moduleTest = async (): Promise<string> => {
+    let data
     try{
-      const data = await SampleModule.sampleMethodCall('test!')
+      data = await SampleModule.sampleMethodCall('test!')
       console.log(data)
     } catch (e) {
       console.error(e)
     }
+    return data
   }
 
+  const [ua, setUa] = useState('');
+
   useEffect(()=>{
+    async function myua(){
+      const gua = await getUserAgent()
+
+      setUa(gua)
+      console.log('gua: ', gua)
+    }
+    myua()
+    // getUserAgent().then(d=>setUa(d))
     return ()=>{ 
       removeListernerTest()
     }
   }, [])
-
+  const webviewRef = useRef<WebView>(null)
 
   const eventEmitter = new NativeEventEmitter(SampleModule)
   let eventListener: EmitterSubscription | null;
@@ -105,16 +116,39 @@ function App(): JSX.Element {
     }
   }
 
+  let userAgent = 's'
+
+  const chanegUserAgent = () => {
+    userAgent = 'zzz' 
+  }
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View></View>
       <Text>a</Text>
       <Text>{Config.ENV}</Text>
-      <Text>a</Text>
-      <Button onPress={onPress} title='moduleTest'></Button>
+      <Text>ab</Text>
+      <Button onPress={moduleTest} title='moduleTest'></Button>
       <Button onPress={addListernerTest} title='addListener'></Button>
       <Button onPress={removeListernerTest} title='removeListener'></Button>
-      <WebView source={{ uri: `${Config.WV_URL}` }}></WebView>
+      <Button onPress={chanegUserAgent} title='chanegUserAgent'></Button>
+      <WebView
+        webviewDebuggingEnabled={true}
+        userAgent={`${ua} lsyhaha`}
+        ref={webviewRef}
+        source={{ uri: `${Config.WV_URL}` }}
+        onMessage={async event => {
+          console.log('wv event>', event)
+
+          const data = JSON.parse(event.nativeEvent.data)
+          
+          if(data.callFn === 'moduleTest'){
+            const d = await moduleTest()
+            console.log('wv d' + d, webviewRef.current)
+            webviewRef.current?.postMessage('data is ' + d)
+          }
+        }}>
+        </WebView>
     </SafeAreaView>
   );
 }

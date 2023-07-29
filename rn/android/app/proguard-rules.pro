@@ -9,3 +9,9 @@
 
 # Add any project specific keep options here:
 -keep class com.rn.BuildConfig { *; }
+
+# rn deevice info
+-keepclassmembers class com.android.installreferrer.api.** {
+  *;
+}
+-keep class com.google.android.gms.common.** {*;}

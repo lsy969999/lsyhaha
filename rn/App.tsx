@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -16,7 +16,8 @@ import {
   useColorScheme,
   View,
   NativeModules,
-  Button
+  Button,
+  NativeEventEmitter
 } from 'react-native';
 
 import {
@@ -28,6 +29,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import Config from 'react-native-config';
 import { WebView } from 'react-native-webview';
+import EventEmitter, { EmitterSubscription } from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -78,6 +80,31 @@ function App(): JSX.Element {
     }
   }
 
+  useEffect(()=>{
+    return ()=>{ 
+      removeListernerTest()
+    }
+  }, [])
+
+
+  const eventEmitter = new NativeEventEmitter(SampleModule)
+  let eventListener: EmitterSubscription | null;
+  const addListernerTest = () => {
+    if(!eventListener){
+      eventListener = eventEmitter.addListener('sampleEventEmitter', event=>{
+        console.log(event)
+      })
+    }
+    
+  }
+
+  const removeListernerTest = () => {
+    if(eventListener){
+      eventListener!.remove()
+      eventListener = null
+    }
+  }
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View></View>
@@ -85,6 +112,8 @@ function App(): JSX.Element {
       <Text>{Config.ENV}</Text>
       <Text>a</Text>
       <Button onPress={onPress} title='moduleTest'></Button>
+      <Button onPress={addListernerTest} title='addListener'></Button>
+      <Button onPress={removeListernerTest} title='removeListener'></Button>
       <WebView source={{ uri: `${Config.WV_URL}` }}></WebView>
     </SafeAreaView>
   );

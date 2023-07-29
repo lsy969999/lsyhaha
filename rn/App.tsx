@@ -15,6 +15,8 @@ import {
   Text,
   useColorScheme,
   View,
+  NativeModules,
+  Button
 } from 'react-native';
 
 import {
@@ -33,6 +35,7 @@ type SectionProps = PropsWithChildren<{
 
 function Section({children, title}: SectionProps): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  
   return (
     <View style={styles.sectionContainer}>
       <Text
@@ -64,12 +67,24 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const {SampleModule} = NativeModules
+
+  const onPress = async () => {
+    try{
+      const data = await SampleModule.sampleMethodCall('test!')
+      console.log(data)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View></View>
       <Text>a</Text>
       <Text>{Config.ENV}</Text>
       <Text>a</Text>
+      <Button onPress={onPress} title='moduleTest'></Button>
       <WebView source={{ uri: `${Config.WV_URL}` }}></WebView>
     </SafeAreaView>
   );

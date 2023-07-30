@@ -8,10 +8,20 @@ import { UserAccountToken } from './entity/userAccountToken.entity';
 import { UserRepository } from './repository/user.repository';
 import { UserAccountRepository } from './repository/userAccount.repository';
 import { UserAccountTokenRepository } from './repository/userAccountToken.repository';
-import { CommonEntity } from 'src/common/common.entity';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from'@nestjs/jwt'
+import * as config from 'config'
 
+const jwtConfig = config.get('jwt') 
 @Module({
     imports: [
+        PassportModule.register({defaultStrategy: 'jwt'}),
+        JwtModule.register({
+        secret: jwtConfig.secret,
+        signOptions: {
+            expiresIn: 60*5
+        }
+        }),
         TypeOrmModule.forFeature([User, UserAccount, UserAccountToken])
     ],
     controllers: [AuthController],

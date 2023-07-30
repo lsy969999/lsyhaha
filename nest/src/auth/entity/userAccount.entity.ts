@@ -3,6 +3,14 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGene
 import { User } from "./user.entity";
 import { UserAccountToken } from "./userAccountToken.entity";
 
+export enum Provider {
+    GUEST = 'GUEST',
+    EMAIL = 'EMAIL',
+    GOOGLE = 'GOOGLE',
+    KAKAO = 'KAKAO',
+    NAVER = 'NAVER',
+}
+
 @Entity({name: 'TB_USER_ACCOUNT'})
 export class UserAccount extends CommonEntity{
     @PrimaryGeneratedColumn({name: 'USER_ACCOUNT_SN'})
@@ -21,6 +29,9 @@ export class UserAccount extends CommonEntity{
     @Column({name: 'PASSWORD'})
     password: string;
 
-    @Column({name: 'REGIST_TYPE'})
-    registType: string;
+    @Column({name: 'PROVIDER'})
+    provider: Provider;
+
+    @Column({name: 'PROVIDER_ID'})
+    providerId: string;
 }

@@ -9,11 +9,11 @@ export class UserAccountToken extends CommonEntity{
 
     @ManyToOne(type=>UserAccountToken, userAccount=>userAccount.userAccountTokenSn)
     @JoinColumn({name: 'USER_ACCOUNT_SN'})
-    userAccount: UserAccount
+    userAccount: UserAccount;
 
-    @Column({name: 'ACCESS_TOKEN'})
-    accessToken: string;
+    @Column({name: 'HASHED_REFRESH_TOKEN'})
+    hashedRefreshToken :string;
 
-    @Column({name: 'REFRESH_TOKEN'})
-    refreshToken :string;
+    @Column({name: 'REFRESH_TOKEN_EXPIRES_IN'})
+    refreshTokenExpiresIn: number;
 }

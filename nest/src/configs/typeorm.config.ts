@@ -9,7 +9,7 @@ export const typeORMConfig: TypeOrmModuleOptions = {
     port: process.env.RDSPORT || dbConfig.port,
     username: process.env.RDS_USERNAME || dbConfig.username,
     password: process.env.RDS_PASSWORD || dbConfig.password,
-    database: process.env.RDS_DATABASE ||dbConfig.database,
+    database: process.env.RDS_DATABASE || dbConfig.database,
     entities: [__dirname + '/../**/*.entity.{js,ts}'],
-    synchronize: true
+    synchronize: true,
 }

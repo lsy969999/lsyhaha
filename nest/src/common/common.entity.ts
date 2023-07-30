@@ -1,18 +1,18 @@
 import { BaseEntity, Column } from "typeorm";
 
 export abstract class CommonEntity extends BaseEntity{
-    @Column()
+    @Column({name: 'DEL_STATUS'})
     delStatus: string;
 
-    @Column()
-    createBy: number;
+    @Column({name: 'CREATED_BY'})
+    createdBy: number;
 
-    @Column()
-    modifiedBy: number;
+    @Column({name: 'MDFIED_BY'})
+    mdifiedBy: number;
 
-    @Column()
-    createAt: Date;
+    @Column({name: 'CREATED_AT'})
+    createdAt: Date;
 
-    @Column()
-    modifiedAt: Date;
+    @Column({name: 'MDFIED_AT'})
+    mdifiedAt: Date;
 }

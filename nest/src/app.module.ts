@@ -1,11 +1,18 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { HelloWorldController } from './hello-world/hello-world.controller';
+import { AuthModule } from './auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeORMConfig } from './configs/typeorm.config';
+import { CommonEntity } from './common/common.entity';
 
 @Module({
-  imports: [],
-  controllers: [AppController, HelloWorldController],
+  imports: [
+    TypeOrmModule.forRoot(typeORMConfig),
+    TypeOrmModule.forFeature([CommonEntity]),
+    AuthModule
+  ],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

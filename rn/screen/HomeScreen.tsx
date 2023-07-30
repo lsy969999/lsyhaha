@@ -98,7 +98,7 @@ export default function HomeScreen({navigation, route}: HomeScreenProps){
           const {url} = request;
           const tarUrl = url.replace(/\/$/, '');
           const refUrl = (Config.WV_URL ?? '').replace(/\/$/, '');
-          if(refUrl !== tarUrl){
+          if(refUrl !== tarUrl && false){//TODO: 
             Linking.openURL(url).catch(e=>console.error('Failed to open ' + e))
             return false
           }

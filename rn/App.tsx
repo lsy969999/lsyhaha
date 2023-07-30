@@ -67,9 +67,18 @@ function App(): JSX.Element {
       console.log('gua: ', gua)
     }
     myua()
-    // getUserAgent().then(d=>setUa(d))
+
+    Linking.getInitialURL().then(value=>{
+      console.log('getInitialURL,', value)
+    })
+
+    Linking.addEventListener('url', (e)=>{
+      console.log('addEventListener url', e.url)
+    })
+
     return ()=>{ 
       removeListernerTest()
+      Linking.removeAllListeners('url')
     }
   }, [])
   const webviewRef = useRef<WebView>(null)

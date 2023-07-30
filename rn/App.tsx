@@ -17,7 +17,8 @@ import {
   View,
   NativeModules,
   Button,
-  NativeEventEmitter
+  NativeEventEmitter,
+  Linking
 } from 'react-native';
 import {
   Colors,
@@ -29,37 +30,10 @@ import {
 import Config from 'react-native-config';
 import { WebView } from 'react-native-webview';
 import EventEmitter, { EmitterSubscription } from 'react-native/Libraries/vendor/emitter/EventEmitter';
-import {getUserAgent} from 'react-native-device-info'
+import {getUserAgent, getVersion} from 'react-native-device-info'
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -82,12 +56,14 @@ function App(): JSX.Element {
   }
 
   const [ua, setUa] = useState('');
+  const [v, setV] = useState('');
 
   useEffect(()=>{
     async function myua(){
       const gua = await getUserAgent()
-
       setUa(gua)
+      const v = getVersion()
+      setV(v)
       console.log('gua: ', gua)
     }
     myua()
@@ -116,25 +92,19 @@ function App(): JSX.Element {
     }
   }
 
-  let userAgent = 's'
-
-  const chanegUserAgent = () => {
-    userAgent = 'zzz' 
-  }
-
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View></View>
       <Text>a</Text>
       <Text>{Config.ENV}</Text>
       <Text>ab</Text>
       <Button onPress={moduleTest} title='moduleTest'></Button>
       <Button onPress={addListernerTest} title='addListener'></Button>
       <Button onPress={removeListernerTest} title='removeListener'></Button>
-      <Button onPress={chanegUserAgent} title='chanegUserAgent'></Button>
+      <Button onPress={()=>webviewRef.current?.reload()} title='refresh'></Button>
       <WebView
         webviewDebuggingEnabled={true}
-        userAgent={`${ua} lsyhaha`}
+        userAgent={`${ua} lsyhaha-${v}`}
+        bounces={false}
         ref={webviewRef}
         source={{ uri: `${Config.WV_URL}` }}
         onMessage={async event => {
@@ -144,32 +114,26 @@ function App(): JSX.Element {
           
           if(data.callFn === 'moduleTest'){
             const d = await moduleTest()
-            console.log('wv d' + d, webviewRef.current)
-            webviewRef.current?.postMessage('data is ' + d)
+            data.return = d
+            webviewRef.current?.postMessage(JSON.stringify(data))
           }
-        }}>
+        }}
+        onShouldStartLoadWithRequest={(request) => {
+          const {url} = request;
+          const tarUrl = url.replace(/\/$/, '');
+          const refUrl = (Config.WV_URL ?? '').replace(/\/$/, '');
+          if(refUrl !== tarUrl){
+            Linking.openURL(url).catch(e=>console.error('Failed to open ' + e))
+            return false
+          }
+          return true
+        }}
+        onNavigationStateChange={newNavState=>{
+          
+        }}
+        >
         </WebView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
 export default App;

@@ -1,5 +1,5 @@
 import { CommonEntity } from "src/common/common.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 import { UserAccountToken } from "./userAccountToken.entity";
 
@@ -12,6 +12,7 @@ export enum Provider {
 }
 
 @Entity({name: 'TB_USER_ACCOUNT'})
+// @Index(['email','provider','delStatus'], {unique: true})
 export class UserAccount extends CommonEntity{
     @PrimaryGeneratedColumn({name: 'USER_ACCOUNT_SN'})
     userAccountSn: number;
@@ -23,7 +24,7 @@ export class UserAccount extends CommonEntity{
     @OneToMany(type=>UserAccountToken, userAccountToken=>userAccountToken.userAccountTokenSn)
     userAccountToken: UserAccountToken[];
 
-    @Column({name: 'EAMIL'})
+    @Column({name: 'EMAIL'})
     email: string;
 
     @Column({name: 'PASSWORD'})

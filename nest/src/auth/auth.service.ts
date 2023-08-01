@@ -36,26 +36,39 @@ export class AuthService {
         try {
             const {email, name, nickName, password, provider} = signUpDTO
             //(*1)
-            this.userAccountRepository.count({where:{email, provider, delStatus: DelStatus.N,}})
+            const dupCnt = await this.userAccountRepository.count({where:{email, provider, delStatus: DelStatus.N,}})
+            if(dupCnt){
+                throw new HttpException('eamil duplicated', HttpStatus.INTERNAL_SERVER_ERROR)
+            }
     
             //(*2)
             const user = await this.userRepository.create({name, nickName})
-    
+            await this.userRepository.save(user)
+
             //(*3)
-            const userAccount = this.userAccountRepository.create({user, email, provider, password})
+            const salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash(password, salt)
+            const userAccount = this.userAccountRepository.create({user, email, provider, password: hashedPassword})
+            await this.userAccountRepository.save(userAccount)
     
             //(*4)
-            const token = this.getTokens(userAccount.userAccountSn, userAccount.email, userAccount.provider)
+            const token = await this.getTokens(userAccount.userAccountSn, userAccount.email, userAccount.provider)
+            
+            const hashedRefreshToken = this.hashData(token.refreshToekn)
         
             //(*5)
-            const userAccountToken = this.userAccountTokenRepository.create({userAccount, })
+            const userAccountToken = this.userAccountTokenRepository.create({userAccount, hashedRefreshToken,})
+            await this.userAccountTokenRepository.save(userAccountToken)
+
+            await queryRunner.commitTransaction()
             return token
         } catch (err) {
             await queryRunner.rollbackTransaction()
+            console.error('signUp', err)
             throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR)
         } finally {
             await queryRunner.release();
-            throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR)
+            //throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -110,7 +123,7 @@ export class AuthService {
     }
 
     private hashData(data: string){
-        return bcrypt.hashData(data, 10)
+        return bcrypt.hashSync(data, 10)
     }
 
     async emailValidation(eamil: string){

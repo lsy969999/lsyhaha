@@ -13,7 +13,7 @@ export class User extends CommonEntity{
     userSn: number;
 
     @OneToMany(type=>UserAccount, (userAccount)=>userAccount.user)
-    userAccount: UserAccount
+    userAccount: UserAccount[]
 
     @Column({name: 'NAME'})
     name: string;
@@ -21,7 +21,7 @@ export class User extends CommonEntity{
     @Column({name: 'NICK_NAME'})
     nickName: string;
 
-    @Column({name: 'CI'})
+    @Column({name: 'CI', nullable: true})
     ci: string;
 
     @Column({name: 'USER_STATUS', default: UserStatus.ACTIVE})

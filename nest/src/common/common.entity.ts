@@ -1,4 +1,4 @@
-import { BaseEntity, Column } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 export enum DelStatus{
     N = 'N',
@@ -9,15 +9,15 @@ export abstract class CommonEntity extends BaseEntity{
     @Column({name: 'DEL_STATUS', default: DelStatus.N})
     delStatus: DelStatus;
 
-    @Column({name: 'CREATED_BY'})
+    @Column({name: 'CREATED_BY', nullable: true})
     createdBy: number;
 
-    @Column({name: 'UPDATED_BY'})
+    @Column({name: 'UPDATED_BY', nullable: true})
     updatedBy: number;
 
-    @Column({name: 'CREATED_AT'})
+    @CreateDateColumn({name: 'CREATED_AT', type: 'timestamp', default: 'now()'})
     createdAt: Date;
 
-    @Column({name: 'UPDATED_AT'})
+    @UpdateDateColumn({name: 'UPDATED_AT', type: 'timestamp', default: 'now()'})
     updatedAt: Date;
 }

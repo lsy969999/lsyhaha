@@ -21,7 +21,7 @@ export class UserAccount extends CommonEntity{
     @JoinColumn({name: 'USER_SN'})
     user: User;
 
-    @OneToMany(type=>UserAccountToken, userAccountToken=>userAccountToken.userAccountTokenSn)
+    @OneToMany(type=>UserAccountToken, userAccountToken=>userAccountToken.userAccount)
     userAccountToken: UserAccountToken[];
 
     @Column({name: 'EMAIL'})
@@ -33,6 +33,6 @@ export class UserAccount extends CommonEntity{
     @Column({name: 'PROVIDER'})
     provider: Provider;
 
-    @Column({name: 'PROVIDER_ID'})
+    @Column({name: 'PROVIDER_ID', nullable: true})
     providerId: string;
 }

@@ -7,13 +7,13 @@ export class UserAccountToken extends CommonEntity{
     @PrimaryGeneratedColumn({name: 'USER_ACCOUNT_TOKEN_SN'})
     userAccountTokenSn: number;
 
-    @ManyToOne(type=>UserAccountToken, userAccount=>userAccount.userAccountTokenSn)
+    @ManyToOne(type=>UserAccount, userAccount=>userAccount.userAccountToken)
     @JoinColumn({name: 'USER_ACCOUNT_SN'})
     userAccount: UserAccount;
 
     @Column({name: 'HASHED_REFRESH_TOKEN'})
     hashedRefreshToken :string;
 
-    @Column({name: 'REFRESH_TOKEN_EXPIRES_IN'})
-    refreshTokenExpiresIn: number;
+    // @Column({name: 'REFRESH_TOKEN_EXPIRES_IN'})
+    // refreshTokenExpiresIn: number;
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Token } from './type/Token';
 import { RVO } from 'src/common/ApiResponse.dto';
@@ -9,7 +9,7 @@ export class AuthController {
     constructor(private authService: AuthService){}
 
     @Post("signup")
-    async signUp(@Body() signUpDTO: SingUpDTO): Promise<RVO<Token>>{
+    async signUp(@Body(ValidationPipe) signUpDTO: SingUpDTO): Promise<RVO<Token>>{
         const token = await this.authService.signUp(signUpDTO)
         return RVO.Gen('', token);
     }

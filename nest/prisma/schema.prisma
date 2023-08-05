@@ -48,7 +48,8 @@ model UserAccountToken {
     userAccountTokenSn Int @default(autoincrement()) @id
     userAccountSn Int
     userAccount UserAccount @relation(fields: [userAccountSn], references: [userAccountSn])
-    hashedRefreshToekn String
+    hashedRefreshToken String
+    expiresIn BigInt
     //
     delStatus DelStatus @default(N)
     createdAt DateTime @default(now())

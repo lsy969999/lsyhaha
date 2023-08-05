@@ -4,74 +4,96 @@ import { JwtService } from '@nestjs/jwt';
 import { Token } from './type/Token';
 import { SingUpDTO } from './dto/signUp.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserAccount } from '@prisma/client';
+import { Provider, UserAccount } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
     constructor(
-        // private userRepository: UserRepository,
-        // private userAccountRepository: UserAccountRepository,
-        // private userAccountTokenRepository: UserAccountTokenRepository,
         private jwtService: JwtService,
-        // private dataSource: DataSource,
         private prisma: PrismaService,
+        
     ){}
 
     async tests(): Promise<UserAccount[]>{
         return this.prisma.userAccount.findMany()
     }
 
-    // async signUp(signUpDTO: SingUpDTO): Promise<Token>{
-    //     /**
-    //      * 1. email 중복체크
-    //      * 2. user 생성
-    //      * 3. userAccount 생성
-    //      * 4. tokengenerate
-    //      * 5. userAccountToken 생성
-    //      */
-    //     const queryRunner = this.dataSource.createQueryRunner();
+    async signUp(signUpDTO: SingUpDTO): Promise<Token>{
+        const {email, name, nickName, password, provider, providerId} = signUpDTO
+        return await this.prisma.$transaction<Token>(async (tx)=>{
+             /**
+             * 1. email 중복체크
+             * 2. user 생성
+             * 3. userAccount 생성
+             * 4. tokengenerate
+             * 5. userAccountToken 생성
+             */
 
-    //     await queryRunner.connect()
-    //     await queryRunner.startTransaction()
-    //     // let token;
-    //     try {
-    //         const {email, name, nickName, password, provider} = signUpDTO
-    //         //(*1)
-    //         const dupCnt = await this.userAccountRepository.count({where:{email, provider, delStatus: DelStatus.N,}})
-    //         if(dupCnt){
-    //             throw new HttpException('eamil duplicated', HttpStatus.INTERNAL_SERVER_ERROR)
-    //         }
-    
-    //         //(*2)
-    //         const user = await this.userRepository.create({name, nickName})
-    //         await this.userRepository.save(user)
+             //(*1)
+            const dupCnt = await tx.userAccount.count({
+                where: {
+                    AND:[
+                        {email},
+                        {provider},
+                        {delStatus: 'N'}
+                    ]
+                }
+            });
+            if(dupCnt){
+                throw new HttpException('eamil duplicated', HttpStatus.INTERNAL_SERVER_ERROR)
+            }
 
-    //         //(*3)
-    //         const salt = await bcrypt.genSalt();
-    //         const hashedPassword = await bcrypt.hash(password, salt)
-    //         const userAccount = this.userAccountRepository.create({user, email, provider, password: hashedPassword})
-    //         await this.userAccountRepository.save(userAccount)
-    
-    //         //(*4)
-    //         const token = await this.getTokens(userAccount.userAccountSn, userAccount.email, userAccount.provider)
-            
-    //         const hashedRefreshToken = this.hashData(token.refreshToekn)
-        
-    //         //(*5)
-    //         const userAccountToken = this.userAccountTokenRepository.create({userAccount, hashedRefreshToken,})
-    //         await this.userAccountTokenRepository.save(userAccountToken)
+            //(*2)
+            const user = await tx.user.create({
+                data:{
+                    name,
+                    nickName,
+                    updateBy: 1,
+                    createBy: 1
+                }
+            })
 
-    //         await queryRunner.commitTransaction()
-    //         return token
-    //     } catch (err) {
-    //         await queryRunner.rollbackTransaction()
-    //         console.error('signUp', err)
-    //         throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR)
-    //     } finally {
-    //         await queryRunner.release();
-    //         //throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR)
-    //     }
-    // }
+            //(*3)
+            const salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash(password, salt)
+            const userAccount = await tx.userAccount.create({
+                data: {
+                    email,
+                    password: hashedPassword,
+                    provider,
+                    providerId,
+                    user: {
+                        connect: user
+                    },
+                    createBy: 1,
+                    updateBy: 1,
+                }
+            })
+
+            //(*4)
+            const refExpiresIn = 60*60*10
+            const accToken = await this.getAccToken(userAccount.userAccountSn, userAccount.email, userAccount.provider, 60*60);
+            const refToken = await this.getRefToken(userAccount.userAccountSn, userAccount.email, userAccount.provider, refExpiresIn);
+            const hashedRefreshToken = this.hashData(refToken)
+            //(*5)
+            const userAccountToken = await tx.userAccountToken.create({
+                data: {
+                    createBy: 1,
+                    updateBy: 1,
+                    hashedRefreshToken,
+                    expiresIn: new Date().getTime() + refExpiresIn,
+                    userAccount: {
+                        connect: userAccount
+                    }
+                }
+            })
+
+            return {
+                accessToekn: accToken,
+                refreshToken: refToken
+            }
+        })
+    }
 
     // async signIn(){
     //     /**
@@ -92,7 +114,35 @@ export class AuthService {
 
     // }
 
-    // async getTokens(userSn: number, email: string, provider: Provider): Promise<Token>{
+    async getAccToken(userSn: number, email: string, provider: Provider, expiresIn: number): Promise<string>{
+        return this.jwtService.signAsync(
+            {
+                sub: userSn,
+                email,
+                provider
+            },
+            {
+                secret: 'at-secret',
+                expiresIn,
+            }
+        )
+    }
+
+    async getRefToken(userSn: number, email: string, provider: Provider, expiresIn: number): Promise<string>{
+        return this.jwtService.signAsync(
+            {
+                sub: userSn,
+                email,
+                provider
+            },
+            {
+                secret: 'at-secret',
+                expiresIn,
+            }
+        )
+    }
+
+    // async getTokens(userSn: number, email: string, provider: Provider, expiresIn: number): Promise<Token>{
     //     const [at, rt] = await Promise.all([
     //         this.jwtService.signAsync(
     //             {
@@ -123,9 +173,9 @@ export class AuthService {
     //     }
     // }
 
-    // private hashData(data: string){
-    //     return bcrypt.hashSync(data, 10)
-    // }
+    private hashData(data: string){
+        return bcrypt.hashSync(data, 10)
+    }
 
     // async emailValidation(eamil: string){
 

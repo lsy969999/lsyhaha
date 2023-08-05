@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Token } from './type/Token';
-import { RVO } from 'src/common/ApiResponse.dto';
+import { RVO, RVOCode } from 'src/common/ApiResponse.dto';
 import { SingUpDTO } from './dto/signUp.dto';
 
 @Controller('auth')
@@ -13,11 +13,11 @@ export class AuthController {
         return this.authService.tests()
     }
 
-    // @Post("signup")
-    // async signUp(@Body(ValidationPipe) signUpDTO: SingUpDTO): Promise<RVO<Token>>{
-    //     const token = await this.authService.signUp(signUpDTO)
-    //     return RVO.Gen('', token);
-    // }
+    @Post("signup")
+    async signUp(@Body(ValidationPipe) signUpDTO: SingUpDTO): Promise<RVO<Token>>{
+        const token = await this.authService.signUp(signUpDTO)
+        return RVO.Gen('생성됐습니다.', RVOCode.OK, token);
+    }
 
     // @Post("signin")
     // signIn(){

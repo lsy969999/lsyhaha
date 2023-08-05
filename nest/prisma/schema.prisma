@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+    userSn Int @default(autoincrement()) @id
+    userAccount UserAccount[]
+    name String
+    nickName String
+    ci String?
+    userStatus UserStatus @default(Active)
+    //
+    delStatus DelStatus @default(N)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    createBy Int
+    updateBy Int
+}
+
+model UserAccount {
+    userAccountSn Int @default(autoincrement()) @id
+    userSn Int
+    user User @relation(fields: [userSn], references: [userSn])
+    userAccountToken UserAccountToken[]
+    email String
+    password String
+    provider Provider
+    providerId String
+    //
+    delStatus DelStatus @default(N)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    createBy Int
+    updateBy Int
+}
+
+model UserAccountToken {
+    userAccountTokenSn Int @default(autoincrement()) @id
+    userAccountSn Int
+    userAccount UserAccount @relation(fields: [userAccountSn], references: [userAccountSn])
+    hashedRefreshToekn String
+    //
+    delStatus DelStatus @default(N)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    createBy Int
+    updateBy Int
+}
+
+enum DelStatus {
+    Y
+    N
+}
+
+enum UserStatus {
+    Active
+    InActive
+}
+
+enum Provider {
+    Guest
+    Email
+    Google
+    Kakao
+    Naver
+}

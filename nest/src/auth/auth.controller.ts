@@ -8,34 +8,39 @@ import { SingUpDTO } from './dto/signUp.dto';
 export class AuthController {
     constructor(private authService: AuthService){}
 
-    @Post("signup")
-    async signUp(@Body(ValidationPipe) signUpDTO: SingUpDTO): Promise<RVO<Token>>{
-        const token = await this.authService.signUp(signUpDTO)
-        return RVO.Gen('', token);
+    @Get('test')
+    async test(){
+        return this.authService.tests()
     }
 
-    @Post("signin")
-    signIn(){
+    // @Post("signup")
+    // async signUp(@Body(ValidationPipe) signUpDTO: SingUpDTO): Promise<RVO<Token>>{
+    //     const token = await this.authService.signUp(signUpDTO)
+    //     return RVO.Gen('', token);
+    // }
 
-    }
+    // @Post("signin")
+    // signIn(){
 
-    @Post("signout")
-    signOut(){
+    // }
 
-    }
+    // @Post("signout")
+    // signOut(){
 
-    @Post("withdrawl")
-    withdrawl(){
+    // }
 
-    }
+    // @Post("withdrawl")
+    // withdrawl(){
 
-    @Post("refresh")
-    refresh(){
+    // }
 
-    }
+    // @Post("refresh")
+    // refresh(){
 
-    @Get("emailValidation")
-    emailValidation(){
+    // }
 
-    }
+    // @Get("emailValidation")
+    // emailValidation(){
+
+    // }
 }

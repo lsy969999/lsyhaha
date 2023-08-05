@@ -2,15 +2,13 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeORMConfig } from './configs/typeorm.config';
-import { CommonEntity } from './common/common.entity';
+import { PrismaService } from './prisma/prisma.service';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeORMConfig),
-    TypeOrmModule.forFeature([CommonEntity]),
-    AuthModule
+    AuthModule,
+    PrismaModule
   ],
   controllers: [AppController],
   providers: [AppService],

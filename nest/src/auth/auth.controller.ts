@@ -3,7 +3,9 @@ import { AuthService } from './auth.service';
 import { Token } from './type/Token';
 import { RVO, RVOCode } from 'src/common/ApiResponse.dto';
 import { SingUpDTO } from './dto/signUp.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService){}

@@ -29,3 +29,22 @@ jobs:
       run: |
         npm run build
         npm test
+    - name: zip create
+      run: zip -qq -r ./lsyhaha.zip
+      shell: bash
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-ket-id: ${{secrets.AWS_ACCESS_KEY}}
+        aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        aws-region: ap-northeast-2
+    - name: Upload to S3
+      run: |
+        aws s3 cp --region ap-northeast-2 ./lsyhaha.zip s3://lsyhaha/deploy/
+    - name: Deploy
+      run: |
+        aws deploy create-deployment
+        --application-name deploy-lsyhaha
+        --deployment-config-name CodeDeployDefault.OneAtATime
+        --deployment-group-name deploy-lsyhaha
+        --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/lsyhaha.zip

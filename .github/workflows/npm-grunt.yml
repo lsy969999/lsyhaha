@@ -45,7 +45,7 @@ jobs:
         aws s3 cp --region ap-northeast-2 ./lsyhaha.zip s3://lsyhaha/deploy/
     - name: Deploy
       run: aws deploy create-deployment
-        --application-name deploy-lsyhaha
+        --application-name lsyhaha
         --deployment-config-name CodeDeployDefault.OneAtATime
-        --deployment-group-name deploy-lsyhaha
+        --deployment-group-name lsyhaha
         --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/lsyhaha.zip

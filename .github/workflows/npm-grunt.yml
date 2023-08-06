@@ -32,9 +32,7 @@ jobs:
     - name: zip create
       working-directory: ./nest
       run: |
-        cp ./appspec.yml ./dist
-        cp ./deploy.sh ./dist
-        zip -r lsyhaha.zip ./ -x "node_modules/*" "dist/*"
+        zip -r lsyhaha.zip . -x "node_modules/*" "dist/*"
       shell: bash
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1

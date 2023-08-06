@@ -38,7 +38,7 @@ jobs:
       with:
         aws-access-ket-id: ${{secrets.AWS_ACCESS_KEY}}
         aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-        aws-region: ap-northeast-2
+        aws-region: us-east-1
     - name: Upload to S3
       run: |
         aws s3 cp --region ap-northeast-2 ./lsyhaha.zip s3://lsyhaha/deploy/

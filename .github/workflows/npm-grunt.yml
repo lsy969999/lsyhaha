@@ -14,9 +14,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        path: ./nest
-    - run: ls -al
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -24,9 +21,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
+      working-directory: ./nest
       run: |
         npm install
     - name: Build and test
+      working-directory: ./nest
       run: |
         npm run build
         npm test

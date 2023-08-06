@@ -31,7 +31,7 @@ jobs:
         npm test
     - name: zip create
       working-directory: ./nest
-      run: zip -qq -r ./lsyhaha.zip
+      run: zip -qq -r lsyhaha.zip .
       shell: bash
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1

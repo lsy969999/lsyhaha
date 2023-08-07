@@ -20,15 +20,15 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    # - name: Install dependencies(nest)
-    #   working-directory: ./nest
-    #   run: |
-    #     npm install
-    # - name: Build and test(nest)
-    #   working-directory: ./nest
-    #   run: |
-    #     npm run build
-    #     npm test
+    - name: Install dependencies(nest)
+      working-directory: ./nest
+      run: |
+        npm install
+    - name: Build and test(nest)
+      working-directory: ./nest
+      run: |
+        npm run build
+        npm test
     - name: zip create(nest)
       working-directory: ./nest
       run: |
@@ -43,7 +43,7 @@ jobs:
     - name: Upload to S3(nest)
       working-directory: ./nest
       run: |
-        aws s3 cp --region ap-northeast-2 ./lsyhahanest.zip s3://lsyhaha/deploy
+        aws s3 cp --region ap-northeast-2 ./lsyhahanest.zip s3://lsyhaha/deploy/
     - name: Deploy(nest)
       run: aws deploy create-deployment
         --application-name lsyhaha
@@ -65,14 +65,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install dependencies(next)
-        working-directory: ./next
-        run: |
-          npm install
-      - name: Build and test(next)
-        working-directory: ./next
-        run: |
-          npm run build
+      # - name: Install dependencies(next)
+      #   working-directory: ./next
+      #   run: |
+      #     npm install
+      # - name: Build and test(next)
+      #   working-directory: ./next
+      #   run: |
+      #     npm run build
       - name: zip create(next)
         working-directory: ./next
         run: |
@@ -87,7 +87,7 @@ jobs:
       - name: Upload to S3(next)
         working-directory: ./next
         run: |
-          aws s3 cp --region ap-northeast-2 ./lsyhahanext.zip s3://lsyhaha/deploy
+          aws s3 cp --region ap-northeast-2 ./lsyhahanext.zip s3://lsyhaha/deploy/
       - name: Deploy(next)
         run: aws deploy create-deployment
           --application-name lsyhaha

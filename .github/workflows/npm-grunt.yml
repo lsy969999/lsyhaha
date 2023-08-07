@@ -5,7 +5,7 @@ on:
     branches: [ "development" ]
 
 jobs:
-  build:
+  nest:
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,33 +20,77 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
+    - name: Install dependencies(nest)
       working-directory: ./nest
       run: |
         npm install
-    - name: Build and test
+    - name: Build and test(nest)
       working-directory: ./nest
       run: |
         npm run build
         npm test
-    - name: zip create
+    - name: zip create(nest)
       working-directory: ./nest
       run: |
         zip -r lsyhaha.zip . -x "node_modules/*" "dist/*"
       shell: bash
-    - name: Configure AWS credentials
+    - name: Configure AWS credentials(nest)
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-northeast-2
-    - name: Upload to S3
+    - name: Upload to S3(nest)
       working-directory: ./nest
       run: |
-        aws s3 cp --region ap-northeast-2 ./lsyhaha.zip s3://lsyhaha/deploy/
-    - name: Deploy
+        aws s3 cp --region ap-northeast-2 ./lsyhaha.zip s3://lsyhaha/deploy/nest
+    - name: Deploy(nest)
       run: aws deploy create-deployment
         --application-name lsyhaha
         --deployment-config-name CodeDeployDefault.OneAtATime
         --deployment-group-name lsyhaha
-        --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/lsyhaha.zip
+        --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/nest/lsyhaha.zip
+
+  next:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+  
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies(next)
+        working-directory: ./next
+        run: |
+          npm install
+      - name: Build and test(next)
+        working-directory: ./next
+        run: |
+          npm run build
+      - name: zip create(next)
+        working-directory: ./next
+        run: |
+          zip -r lsyhaha.zip . -x "node_modules/*" "dist/*"
+        shell: bash
+      - name: Configure AWS credentials(next)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+      - name: Upload to S3(next)
+        working-directory: ./next
+        run: |
+          aws s3 cp --region ap-northeast-2 ./lsyhaha.zip s3://lsyhaha/deploy/next
+      - name: Deploy(next)
+        run: aws deploy create-deployment
+          --application-name lsyhaha
+          --deployment-config-name CodeDeployDefault.OneAtATime
+          --deployment-group-name lsyhaha
+          --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/next/lsyhaha.zip

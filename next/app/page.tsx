@@ -7,12 +7,12 @@ import SampleRnBtn from './component/sampleRnBtn'
 type param = {hello: string, lsy: string}
 
 export default async function Home() {
-  const dynamicData = await fetch('http://localhost:3001/helloworld', {cache: 'no-store'})
-  const d = await dynamicData.json()
+  // const dynamicData = await fetch('http://localhost:3001/helloworld', {cache: 'no-store'})
+  // const d = await dynamicData.json()
 
   return (
     <main className="">
-        <h1>Hellow World{d.lsy}</h1>
+        <h1>Hellow World</h1>
         <section>
           <div>
             <button>email login</button>

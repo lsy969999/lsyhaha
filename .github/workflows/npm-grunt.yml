@@ -65,14 +65,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      # - name: Install dependencies(next)
-      #   working-directory: ./next
-      #   run: |
-      #     npm install
-      # - name: Build and test(next)
-      #   working-directory: ./next
-      #   run: |
-      #     npm run build
+      - name: Install dependencies(next)
+        working-directory: ./next
+        run: |
+          npm install
+      - name: Build and test(next)
+        working-directory: ./next
+        run: |
+          npm run build
       - name: zip create(next)
         working-directory: ./next
         run: |
@@ -92,5 +92,5 @@ jobs:
         run: aws deploy create-deployment
           --application-name lsyhaha
           --deployment-config-name CodeDeployDefault.OneAtATime
-          --deployment-group-name lsyhaha
+          --deployment-group-name lsyhahanext
           --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/lsyhahanext.zip

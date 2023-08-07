@@ -12,7 +12,7 @@ export default async function Home() {
 
   return (
     <main className="">
-        <h1>Hellow World TEST!</h1>
+        <h1>Hellow World TEST! hahaha</h1>
         <section>
           <div>
             <button>email login</button>

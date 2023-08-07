@@ -32,7 +32,7 @@ jobs:
     - name: zip create(nest)
       working-directory: ./nest
       run: |
-        zip -r lsyhahanest.zip . -x "node_modules/*" "dist/*"
+        zip -r lsyhahanest.zip . -x "node_modules/*"
       shell: bash
     - name: Configure AWS credentials(nest)
       uses: aws-actions/configure-aws-credentials@v1
@@ -76,7 +76,7 @@ jobs:
       - name: zip create(next)
         working-directory: ./next
         run: |
-          zip -r lsyhahanext.zip . -x "node_modules/*" "dist/*" ".next/*"
+          zip -r lsyhahanext.zip . -x "node_modules/*"
         shell: bash
       - name: Configure AWS credentials(next)
         uses: aws-actions/configure-aws-credentials@v1

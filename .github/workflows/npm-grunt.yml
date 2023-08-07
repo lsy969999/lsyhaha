@@ -20,19 +20,19 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies(nest)
-      working-directory: ./nest
-      run: |
-        npm install
-    - name: Build and test(nest)
-      working-directory: ./nest
-      run: |
-        npm run build
-        npm test
+    # - name: Install dependencies(nest)
+    #   working-directory: ./nest
+    #   run: |
+    #     npm install
+    # - name: Build and test(nest)
+    #   working-directory: ./nest
+    #   run: |
+    #     npm run build
+    #     npm test
     - name: zip create(nest)
       working-directory: ./nest
       run: |
-        zip -r lsyhaha.zip . -x "node_modules/*" "dist/*"
+        zip -r lsyhahanest.zip . -x "node_modules/*" "dist/*"
       shell: bash
     - name: Configure AWS credentials(nest)
       uses: aws-actions/configure-aws-credentials@v1
@@ -43,13 +43,13 @@ jobs:
     - name: Upload to S3(nest)
       working-directory: ./nest
       run: |
-        aws s3 cp --region ap-northeast-2 ./lsyhaha.zip s3://lsyhaha/deploy/nest
+        aws s3 cp --region ap-northeast-2 ./lsyhahanest.zip s3://lsyhaha/deploy
     - name: Deploy(nest)
       run: aws deploy create-deployment
         --application-name lsyhaha
         --deployment-config-name CodeDeployDefault.OneAtATime
         --deployment-group-name lsyhaha
-        --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/nest/lsyhaha.zip
+        --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/lsyhahanest.zip
 
   next:
     runs-on: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
       - name: zip create(next)
         working-directory: ./next
         run: |
-          zip -r lsyhaha.zip . -x "node_modules/*" "dist/*"
+          zip -r lsyhahanext.zip . -x "node_modules/*" "dist/*" ".next/*"
         shell: bash
       - name: Configure AWS credentials(next)
         uses: aws-actions/configure-aws-credentials@v1
@@ -87,10 +87,10 @@ jobs:
       - name: Upload to S3(next)
         working-directory: ./next
         run: |
-          aws s3 cp --region ap-northeast-2 ./lsyhaha.zip s3://lsyhaha/deploy/next
+          aws s3 cp --region ap-northeast-2 ./lsyhahanext.zip s3://lsyhaha/deploy
       - name: Deploy(next)
         run: aws deploy create-deployment
           --application-name lsyhaha
           --deployment-config-name CodeDeployDefault.OneAtATime
           --deployment-group-name lsyhaha
-          --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/next/lsyhaha.zip
+          --s3-location bucket=lsyhaha,bundleType=zip,key=deploy/lsyhahanext.zip

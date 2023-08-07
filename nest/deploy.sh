@@ -11,6 +11,6 @@ sudo npx prisma generate
 
 # sudo npm run build
 
-sudo pm2 start dist/main.js --name lsyhahanest
+# sudo pm2 start dist/main.js --name lsyhahanest --no-autorestart -- start  -i max
 
-sudo npx pm2 reload all # 프로젝트에서 변경된 내용을 반영하기 위해 pm2를 reload.
+sudo npx pm2 reload lsyhahanest # 프로젝트에서 변경된 내용을 반영하기 위해 pm2를 reload.

@@ -7,6 +7,6 @@ sudo npm install # 의존성 파일 설치.
 
 # sudo npm run build
 
-sudo pm2 start npm --name "lsyhahanext" -- start
+# sudo pm2 start npm --name "lsyhahanext" --no-autorestart -- start  -i max
 
-sudo npx pm2 reload all # 프로젝트에서 변경된 내용을 반영하기 위해 pm2를 reload.
+sudo npx pm2 reload lsyhahanext # 프로젝트에서 변경된 내용을 반영하기 위해 pm2를 reload.

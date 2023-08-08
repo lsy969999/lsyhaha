@@ -5,6 +5,7 @@ import { Token } from './type/Token';
 import { SingUpDTO } from './dto/signUp.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Provider, UserAccount } from '@prisma/client';
+import { singInDTO } from './dto/signIn.dto';
 
 @Injectable()
 export class AuthService {
@@ -93,6 +94,51 @@ export class AuthService {
                 refreshToken: refToken
             }
         })
+    }
+
+    async signIn(singInDTO: singInDTO): Promise<Token>{
+        const acc = await this.prisma.userAccount.findFirst({
+            where: {
+                AND:[
+                    {
+                        email: singInDTO.email
+                    },
+                    {
+                        delStatus: 'N'
+                    }
+                ]
+            }
+        })
+
+        if(!acc){
+            throw new HttpException('no user', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+        if(! await bcrypt.compare(singInDTO.password, acc.password)){
+            throw new HttpException('password not match', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+        
+        const refExpiresIn = 60*60*10
+        const accToken = await this.getAccToken(acc.userAccountSn, acc.email, acc.provider, 60*60);
+        const refToken = await this.getRefToken(acc.userAccountSn, acc.email, acc.provider, refExpiresIn);
+        const hashedRefreshToken = this.hashData(refToken)
+        
+        const userAccountToken = await this.prisma.userAccountToken.create({
+            data: {
+                createBy: 1,
+                updateBy: 1,
+                hashedRefreshToken,
+                expiresIn: new Date().getTime() + refExpiresIn,
+                userAccount: {
+                    connect: acc
+                }
+            }
+        })
+
+        return {
+            accessToekn: accToken,
+            refreshToken: refToken
+        }
     }
 
     // async signIn(){

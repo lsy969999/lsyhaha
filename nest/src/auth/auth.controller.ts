@@ -4,6 +4,7 @@ import { Token } from './type/Token';
 import { RVO, RVOCode } from 'src/common/ApiResponse.dto';
 import { SingUpDTO } from './dto/signUp.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { singInDTO } from './dto/signIn.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -18,13 +19,14 @@ export class AuthController {
     @Post("signup")
     async signUp(@Body(ValidationPipe) signUpDTO: SingUpDTO): Promise<RVO<Token>>{
         const token = await this.authService.signUp(signUpDTO)
-        return RVO.Gen('생성됐습니다.', RVOCode.OK, token);
+        return RVO.Gen('가입 성공 했습니다.', RVOCode.OK, token);
     }
 
-    // @Post("signin")
-    // signIn(){
-
-    // }
+    @Post("signin")
+    async signIn(@Body(ValidationPipe) singInDTO: singInDTO): Promise<RVO<Token>>{
+        const token = await this.authService.signIn(singInDTO)
+        return RVO.Gen('로그인 성공 했습니다.', RVOCode.OK, token);
+    }
 
     // @Post("signout")
     // signOut(){
